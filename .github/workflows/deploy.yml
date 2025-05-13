@@ -38,13 +38,13 @@ jobs:
 
     - name: Deploy to Minikube
       run: |
-        kubectl apply -f kubernative/namespace.yaml
-        kubectl apply -f kubernative/mongo-deployment.yaml
-        kubectl apply -f kubernative/mongo-service.yaml
-        kubectl apply -f kubernative/backend-deployment.yaml
-        kubectl apply -f kubernative/backend-service.yaml
-        kubectl apply -f kubernative/frontend-deployment.yaml
-        kubectl apply -f kubernative/frontend-service.yaml
+        kubectl apply -f kubernetes/namespace.yaml
+        kubectl apply -f kubernetes/mongo-deployment.yaml
+        kubectl apply -f kubernetes/mongo-service.yaml
+        kubectl apply -f kubernetes/backend-deployment.yaml
+        kubectl apply -f kubernetes/backend-service.yaml
+        kubectl apply -f kubernetes/frontend-deployment.yaml
+        kubectl apply -f kubernetes/frontend-service.yaml
 
     - name: Show all resources in namespace
       run: kubectl get all -n book-review
