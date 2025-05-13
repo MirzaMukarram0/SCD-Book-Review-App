@@ -10,55 +10,62 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Debug - Show current directory
-      shell: powershell
-      run: |
-        Write-Host "Current directory:"
-        Get-Location
-        Write-Host "`nDirectory contents:"
-        Get-ChildItem -Force
+      # ← debug step to print out your folder layout
+      - name: Debug workspace layout
+        shell: powershell
+        run: |
+          Write-Host "PWD: $(pwd)"
+          # print first 3 levels; if `tree` isn't available, fallback to PowerShell recursion
+          tree /F /A | Select-Object -First 200 ||
+            (Get-ChildItem -Recurse -Depth 3 | Format-List FullName)
 
-    - name: Debug - Show book-review-app contents
-      shell: powershell
-      run: |
-        Write-Host "`nbook-review-app directory contents:"
-        Get-ChildItem -Path ./book-review-app -Force
+      - name: Set up Docker to use Minikube's environment
+        shell: powershell
+        run: |
+          Write-Host "Configuring Docker to use Minikube's daemon..."
+          & minikube docker-env | Invoke-Expression
 
-    - name: Set up Docker to use Minikube's environment
-      shell: powershell
-      run: |
-        Write-Host "Configuring Docker to use Minikube's daemon..."
-        & minikube docker-env | Invoke-Expression
+      - name: Build backend Docker image
+        shell: powershell
+        run: |
+          docker build `
+            -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest `
+            .\book-review-app\backend
 
-    - name: Build backend Docker image
-      run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest ./book-review-app/backend
+      - name: Build frontend Docker image
+        shell: powershell
+        run: |
+          docker build `
+            -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest `
+            .\book-review-app\frontend
 
-    - name: Build frontend Docker image
-      run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest ./book-review-app/frontend
+      - name: Login to Docker Hub
+        shell: powershell
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Login to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Push backend Docker image
+        shell: powershell
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest
 
-    - name: Push backend Docker image to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest
+      - name: Push frontend Docker image
+        shell: powershell
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest
 
-    - name: Push frontend Docker image to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest
+      - name: Deploy to Minikube
+        shell: powershell
+        run: |
+          kubectl apply -f kubernetes/namespace.yaml
+          kubectl apply -f kubernetes/mongo-deployment.yaml
+          kubectl apply -f kubernetes/mongo-service.yaml
+          kubectl apply -f kubernetes/backend-deployment.yaml
+          kubectl apply -f kubernetes/backend-service.yaml
+          kubectl apply -f kubernetes/frontend-deployment.yaml
+          kubectl apply -f kubernetes/frontend-service.yaml
 
-    - name: Deploy to Minikube
-      run: |
-        kubectl apply -f kubernetes/namespace.yaml
-        kubectl apply -f kubernetes/mongo-deployment.yaml
-        kubectl apply -f kubernetes/mongo-service.yaml
-        kubectl apply -f kubernetes/backend-deployment.yaml
-        kubectl apply -f kubernetes/backend-service.yaml
-        kubectl apply -f kubernetes/frontend-deployment.yaml
-        kubectl apply -f kubernetes/frontend-service.yaml
-
-    - name: Show all resources in namespace
-      run: kubectl get all -n book-review
+      - name: Show all resources in namespace
+        shell: powershell
+        run: kubectl get all -n book-review
