@@ -25,12 +25,12 @@ jobs:
       - name: Build backend Docker image
         run: |
           Write-Host "Building backend image from .\book-review-app\backend"
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest .\book-review-app\backend
+          docker build --tag "${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest" --file ".\book-review-app\backend\Dockerfile" ".\book-review-app\backend"
 
       - name: Build frontend Docker image
         run: |
           Write-Host "Building frontend image from .\book-review-app\frontend"
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest .\book-review-app\frontend
+          docker build --tag "${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest" --file ".\book-review-app\frontend\Dockerfile" ".\book-review-app\frontend"
 
       - name: Login to Docker Hub
         run: |
