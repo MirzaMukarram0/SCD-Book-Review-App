@@ -18,9 +18,11 @@ jobs:
         shell: powershell
         run: |
           Write-Host "PWD: $(pwd)"
-          # print first 3 levels; if `tree` isn't available, fallback to PowerShell recursion
-          tree /F /A | Select-Object -First 200 ||
-            (Get-ChildItem -Recurse -Depth 3 | Format-List FullName)
+          if (Get-Command tree -ErrorAction SilentlyContinue) {
+            tree /F /A | Select-Object -First 200
+          } else {
+            Get-ChildItem -Recurse -Depth 3 | Format-List FullName
+          }
 
       - name: Set up Docker to use Minikube's environment
         shell: powershell
