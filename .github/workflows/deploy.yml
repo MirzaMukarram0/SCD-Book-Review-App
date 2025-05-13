@@ -34,7 +34,7 @@ jobs:
 
       - name: Login to Docker Hub
         run: |
-          echo dckr_pat_QqATUKpMvUs0PKglBs0lTeHcPKQ | docker login -u mukarram1 --password-stdin
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Push backend Docker image
         run: docker push mukarram1/book-review-app-backend:latest
