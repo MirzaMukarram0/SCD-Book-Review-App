@@ -9,10 +9,6 @@ jobs:
   build-deploy:
     runs-on: self-hosted
 
-    defaults:
-      run:
-        shell: powershell
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,7 +21,7 @@ jobs:
       - name: Build backend Docker image
         run: |
           Write-Host "Building backend image from .\book-review-app\backend"
-          docker build --tag "mukarram1/book-review-app-backend:latest" --file ".\book-review-app\backend\Dockerfile" ".\book-review-app\backend"
+          docker build --tag "${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest" --file ".\book-review-app\backend\Dockerfile" ".\book-review-app\backend"
 
       - name: Build frontend Docker image
         run: |
@@ -35,7 +31,7 @@ jobs:
       - name: Login to Docker Hub
         run: |
           Write-Host "Logging in to Docker Hub..."
-          echo "dckr_pat_QqATUKpMvUs0PKglBs0lTeHcPKQ" | docker login -u "mukarram1" --password-stdin
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Push backend Docker image
         run: docker push mukarram1/book-review-app-backend:latest
