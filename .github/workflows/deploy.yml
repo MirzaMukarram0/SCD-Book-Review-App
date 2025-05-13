@@ -9,56 +9,40 @@ jobs:
   build-deploy:
     runs-on: self-hosted
 
+    defaults:
+      run:
+        shell: powershell
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # ← debug step to print out your folder layout
-      - name: Debug workspace layout
-        shell: powershell
-        run: |
-          Write-Host "PWD: $(pwd)"
-          if (Get-Command tree -ErrorAction SilentlyContinue) {
-            tree /F /A | Select-Object -First 200
-          } else {
-            Get-ChildItem -Recurse -Depth 3 | Format-List FullName
-          }
-
       - name: Set up Docker to use Minikube's environment
-        shell: powershell
         run: |
           Write-Host "Configuring Docker to use Minikube's daemon..."
           & minikube docker-env | Invoke-Expression
 
       - name: Build backend Docker image
-        shell: powershell
         run: |
-          docker build `
-            -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest `
-            .\book-review-app\backend
+          Write-Host "Building backend image from .\book-review-app\backend"
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest .\book-review-app\backend
 
       - name: Build frontend Docker image
-        shell: powershell
         run: |
-          docker build `
-            -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest `
-            .\book-review-app\frontend
+          Write-Host "Building frontend image from .\book-review-app\frontend"
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest .\book-review-app\frontend
 
       - name: Login to Docker Hub
-        shell: powershell
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Push backend Docker image
-        shell: powershell
         run: docker push ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest
 
       - name: Push frontend Docker image
-        shell: powershell
         run: docker push ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest
 
       - name: Deploy to Minikube
-        shell: powershell
         run: |
           kubectl apply -f kubernetes/namespace.yaml
           kubectl apply -f kubernetes/mongo-deployment.yaml
@@ -69,5 +53,4 @@ jobs:
           kubectl apply -f kubernetes/frontend-service.yaml
 
       - name: Show all resources in namespace
-        shell: powershell
         run: kubectl get all -n book-review
