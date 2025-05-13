@@ -33,16 +33,12 @@ jobs:
       - name: Build backend Docker image
         shell: powershell
         run: |
-          docker build `
-            -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest `
-            .\book-review-app\backend
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-backend:latest .\book-review-app\backend
 
       - name: Build frontend Docker image
         shell: powershell
         run: |
-          docker build `
-            -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest `
-            .\book-review-app\frontend
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/book-review-app-frontend:latest .\book-review-app\frontend
 
       - name: Login to Docker Hub
         shell: powershell
