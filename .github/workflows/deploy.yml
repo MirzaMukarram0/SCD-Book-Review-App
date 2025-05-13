@@ -33,8 +33,7 @@ jobs:
           docker build --tag "mukarram1/book-review-app-frontend:latest" --file ".\book-review-app\frontend\Dockerfile" ".\book-review-app\frontend"
 
       - name: Login to Docker Hub
-        run: |
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Push backend Docker image
         run: docker push mukarram1/book-review-app-backend:latest
