@@ -1,0 +1,109 @@
+.book-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.book-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.book-card h3 {
+  margin: 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.4;
+  min-height: 2.8em;
+}
+
+.book-card p {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  font-style: italic;
+}
+
+.book-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.book-card a,
+.book-card button {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: center;
+  flex: 1;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+}
+
+.book-card button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.view-button {
+  background-color: #3498db;
+  color: white;
+}
+
+.view-button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+}
+
+.edit-button {
+  background-color: #f39c12;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #d35400;
+  transform: translateY(-2px);
+}
+
+.delete-button {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+
+.error-message {
+  color: #e74c3c;
+  background-color: #fde8e8;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+} 
